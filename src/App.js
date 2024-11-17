@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import Person from './Person';
+import key from './key';
 
 
-const QUERY = "Gosling";
-const KEY = "0263244cabbc1d330a16d2f2c343388b"
+const DEFAULT_QUERY = "Gosling";
 
 const App = () => {
     const [results, setResults] = useState([]);
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const [searchQuery, setSearchQuery] = useState("");
+
+    const QUERY = searchQuery || DEFAULT_QUERY;
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`https://api.themoviedb.org/3/search/person?query=${QUERY}&api_key=${KEY}`);
+                const response = await fetch(`https://api.themoviedb.org/3/search/person?query=${QUERY}&api_key=${key}`);
                 const data = await response.json();
                 setResults(data.results);
                 console.log(data.results);
@@ -29,9 +32,27 @@ const App = () => {
         setSelectedIndex(index);
       }
     };
-
+    const searchPressed = async () => {
+      console.log("Search pressed");
+      try {
+        const response = await fetch(`https://api.themoviedb.org/3/search/person?query=${QUERY}&api_key=${key}`);
+        const data = await response.json();
+        setResults(data.results);
+        console.log(data.results);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+    };
+  };
     return (
         <div>
+          <h1>Search for an Actor</h1>
+          <input 
+        type="text" 
+        value={searchQuery} 
+        placeholder="Search..." 
+        onChange={(e) => setSearchQuery(e.target.value)} 
+      />
+          <button onClick={searchPressed}>Search</button>
             <h1>Search Results for "{QUERY}"</h1>
             {results.length > 0 && (
               <div>
