@@ -56,7 +56,7 @@ const App = () => {
             {results.length > 0 && (
               <div>
                 <Person person={results[selectedIndex]} />
-                <div style={{display: 'flex', justifyContent: 'center'}}>
+                <div>
                 {selectedIndex !== 0 && <button onClick={() => navigateTo(0)}>1</button>}
                 {selectedIndex > 3 && <span>···</span>}
 
