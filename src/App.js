@@ -4,6 +4,7 @@ import key from './key';
 
 
 const DEFAULT_QUERY = "Gosling";
+let QUERYTEXT = DEFAULT_QUERY;
 
 const App = () => {
     const [results, setResults] = useState([]);
@@ -13,17 +14,6 @@ const App = () => {
     const QUERY = searchQuery || DEFAULT_QUERY;
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch(`https://api.themoviedb.org/3/search/person?query=${QUERY}&api_key=${key}`);
-                const data = await response.json();
-                setResults(data.results);
-                console.log(data.results);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
-
         fetchData();
     }, []);
 
@@ -34,14 +24,22 @@ const App = () => {
     };
     const searchPressed = async () => {
       console.log("Search pressed");
-      try {
-        const response = await fetch(`https://api.themoviedb.org/3/search/person?query=${QUERY}&api_key=${key}`);
-        const data = await response.json();
-        setResults(data.results);
-        console.log(data.results);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      QUERYTEXT = searchQuery;
+      if (QUERYTEXT === "") {
+        QUERYTEXT = DEFAULT_QUERY;
+      }
+      fetchData();
+      setSelectedIndex(0);
     };
+    const fetchData = async () => {
+      try {
+          const response = await fetch(`https://api.themoviedb.org/3/search/person?query=${QUERY}&api_key=${key}`);
+          const data = await response.json();
+          setResults(data.results);
+          console.log(data.results);
+      } catch (error) {
+          console.error("Error fetching data:", error);
+      }
   };
     return (
         <div>
@@ -50,14 +48,15 @@ const App = () => {
         type="text" 
         value={searchQuery} 
         placeholder="Search..." 
-        onChange={(e) => setSearchQuery(e.target.value)} 
+        onChange={(e) => setSearchQuery(e.target.value)}
+        onKeyDown={(e) => { if (e.key === 'Enter') { searchPressed(); } }}
       />
           <button onClick={searchPressed}>Search</button>
-            <h1>Search Results for "{QUERY}"</h1>
+            <h1>Search Results for "{QUERYTEXT}"</h1>
             {results.length > 0 && (
               <div>
                 <Person person={results[selectedIndex]} />
-                <div>
+                <div style={{display: 'flex', justifyContent: 'center'}}>
                 {selectedIndex !== 0 && <button onClick={() => navigateTo(0)}>1</button>}
                 {selectedIndex > 3 && <span>···</span>}
 
